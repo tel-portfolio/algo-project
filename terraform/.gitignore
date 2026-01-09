@@ -1,0 +1,22 @@
+# --- Terraform State (CRITICAL) ---
+# This protects 'environments/prod/terraform.tfstate'
+*.tfstate
+*.tfstate.*
+
+# --- Terraform Configuration ---
+# This protects the hidden .terraform folder in 'environments/prod/.terraform'
+.terraform/
+.terraform.lock.hcl
+
+# --- Secrets ---
+# Protects any variable files in 'environments/prod' if you create them later
+*.tfvars
+*.auto.tfvars
+.env
+
+# --- Crash Logs ---
+crash.log
+crash.*
+
+# --- OS Junk ---
+.DS_Store

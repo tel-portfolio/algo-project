@@ -1,0 +1,85 @@
+services:
+  # ---------------------------------------------
+  # Local Azure SQL Database
+  # ---------------------------------------------
+  sql-server:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: local-${SQL_SERVER} 
+    user: root 
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./sql_data:/var/opt/mssql/data
+      - ./sql_log:/var/opt/mssql/log
+      - ./sql_secrets:/var/opt/mssql/secrets
+    restart: always
+
+  # ---------------------------------------------
+  # The Nightly Analysis Script
+  # ---------------------------------------------
+  analyst:
+    build: .
+    container_name: analyst-bot
+    depends_on:
+      - sql-server 
+    environment:
+      - SQL_SERVER=sql-server 
+      - SQL_DB=${SQL_DB}
+      - DB_USERNAME=sa
+      - DB_PASSWORD=${DB_PASSWORD}
+      - LOCAL_MODE=${LOCAL_MODE}
+
+    volumes:
+      - ./signals:/app/signals
+
+    command: ["python", "calculations.py"]
+
+  # ---------------------------------------------
+  # Portfolio Manager - Account 1
+  # ---------------------------------------------
+  trader-1:
+    build: .
+    container_name: trader-account-1
+    depends_on:
+      - sql-server 
+    environment:
+      - SQL_SERVER=sql-server
+      - SQL_DB=${SQL_DB}
+      - LOCAL_MODE=False
+      - DB_USERNAME=sa
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SIMULATION_MODE=${SIMULATION_MODE}
+      - PAPER_MODE=${PAPER_MODE}
+      - ALPACA_ENDPOINT=${ALPACA_ENDPOINT}
+      
+      - ACCOUNT_ID=test-acct-1
+      - ALPACA_API_KEY=${ALPACA_KEY_1}
+      - ALPACA_SECRET_KEY=${ALPACA_SECRET_1}
+    command: ["python", "portfolio_manager.py"]
+
+  # ---------------------------------------------
+  # Portfolio Manager - Account 2
+  # ---------------------------------------------
+  trader-2:
+    build: .
+    container_name: trader-account-2
+    depends_on:
+      - sql-server
+    environment:
+      - SQL_SERVER=sql-server
+      - SQL_DB=${SQL_DB}
+      - LOCAL_MODE=False
+      - DB_USERNAME=sa
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SIMULATION_MODE=${SIMULATION_MODE}
+      - PAPER_MODE=${PAPER_MODE}
+      - ALPACA_ENDPOINT=${ALPACA_ENDPOINT}
+
+      - ACCOUNT_ID=test-acct-2
+      - ALPACA_API_KEY=${ALPACA_KEY_2}
+      - ALPACA_SECRET_KEY=${ALPACA_SECRET_2}
+    command: ["python", "portfolio_manager.py"]

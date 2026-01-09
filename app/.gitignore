@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.venv
+venv/
+
+# Environment Variables & Secrets
+.env
+*.env
+
+# Local Database Persistence
+sql_data/
+sql_log/
+sql_secrets/
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store

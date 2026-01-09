@@ -1,0 +1,9 @@
+yfinance
+pandas
+azure-identity
+azure-storage-blob
+pyodbc
+alpaca-py
+requests
+openpyxl
+pytz 
