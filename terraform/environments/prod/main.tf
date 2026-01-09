@@ -10,7 +10,7 @@ backend "azurerm" {
     resource_group_name  = "rg-tfstate"
     storage_account_name = "tfstate38213" # (Your storage account name)
     container_name       = "tfstate"
-    key                  = "prod.terraform.tfstate" #(Se this key as an environment variable with -- export ARM_ACCESS_KEY="<YOUR_STORAGE_ACCESS_KEY>" )
+    key                  = "prod.terraform.tfstate" #(Set this key as an environment variable with -- export ARM_ACCESS_KEY="<YOUR_STORAGE_ACCESS_KEY>" )
   }
 }
 

@@ -1,0 +1,36 @@
+name: Build and Push App
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+
+env:
+  ACR_NAME: "acralgoportfolioprojectprod" # I pre-filled this for you
+  IMAGE_NAME: "trading-bot"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Log in to ACR
+      run: az acr login --name ${{ env.ACR_NAME }}
+
+    - name: Build Docker Image
+      run: |
+        docker build ./app -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+
+    - name: Push to ACR
+      run: |
+        docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
