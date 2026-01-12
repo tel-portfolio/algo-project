@@ -10,11 +10,13 @@ resource "azurerm_mssql_server" "db_server" {
 }
 
 resource "azurerm_mssql_database" "db" {
-    name = "mssql-db"
-    server_id = azurerm_mssql_server.db_server.id
-    sku_name     = "S0"
-    collation    = "SQL_Latin1_General_CP1_CI_AS"
-    max_size_gb  = 2
+    name           = "mssql-db"
+    server_id      = azurerm_mssql_server.db_server.id
+    collation      = "SQL_Latin1_General_CP1_CI_AS"
+    sku_name = "GP_S_Gen5_1" # Azure Serverless Database
+    auto_pause_delay_in_minutes = 40 
+    min_capacity = 0.5
+    max_size_gb    = 2
 }
 
 resource "azurerm_mssql_virtual_network_rule" "db-rule" {
